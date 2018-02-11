@@ -3,6 +3,11 @@ package com.selman.collect;
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
+import com.selman.entity.TimeSeries;
+import org.hibernate.Session;
+import org.hibernate.SessionFactory;
+import org.hibernate.Transaction;
+import org.hibernate.cfg.Configuration;
 
 import java.io.BufferedReader;
 import java.io.IOException;
@@ -11,12 +16,38 @@ import java.net.HttpURLConnection;
 import java.net.MalformedURLException;
 import java.net.ProtocolException;
 import java.net.URL;
+import java.util.Calendar;
 import java.util.Map;
+import java.util.TimeZone;
 
 public class Collector {
     public static void main(String[] args) {
-        request(
-                "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&interval=15min&outputsize=compact&apikey=W6F61C7U07E7E8JX");
+        Configuration configuration = new Configuration();
+        configuration.addAnnotatedClass(TimeSeries.class);
+        SessionFactory sessionFactory = configuration.configure().buildSessionFactory();
+        Session session = sessionFactory.openSession();
+
+        Transaction transaction = session.getTransaction();
+        transaction.begin();
+
+        TimeSeries timeSeries = new TimeSeries();
+
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        today.set(Calendar.HOUR_OF_DAY, 0);
+        timeSeries.setTradingDay(today.getTime());
+        timeSeries.setOpeningPrice(0);
+        timeSeries.setHigh(10);
+        timeSeries.setLow(0);
+        timeSeries.setClosingPrice(10);
+
+        session.persist(timeSeries);
+
+        transaction.commit();
+
+        session.close();
+
+//        request(
+//                "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&interval=15min&outputsize=compact&apikey=W6F61C7U07E7E8JX");
     }
 
     private static void request(String targetURL) {
