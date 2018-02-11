@@ -28,6 +28,16 @@
             <artifactId>mysql-connector-java</artifactId>
             <version>6.0.6</version>
         </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-api</artifactId>
+            <version>1.7.25</version>
+        </dependency>
+        <dependency>
+            <groupId>org.slf4j</groupId>
+            <artifactId>slf4j-simple</artifactId>
+            <version>1.7.25</version>
+        </dependency>
     </dependencies>
 
     <build>
@@ -35,11 +45,12 @@
             <plugin>
                 <groupId>org.apache.maven.plugins</groupId>
                 <artifactId>maven-jar-plugin</artifactId>
+                <version>3.0.2</version>
                 <configuration>
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.selman.collect.Collector</mainClass>
+                            <mainClass>com.selman.StockApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -49,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.selman.collect.Collector</mainClass>
+                            <mainClass>com.selman.StockApplication</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>
