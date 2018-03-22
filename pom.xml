@@ -50,7 +50,7 @@
                     <archive>
                         <manifest>
                             <addClasspath>true</addClasspath>
-                            <mainClass>com.selman.StockApplication</mainClass>
+                            <mainClass>com.stock.StockApplication</mainClass>
                         </manifest>
                     </archive>
                 </configuration>
@@ -60,7 +60,7 @@
                 <configuration>
                     <archive>
                         <manifest>
-                            <mainClass>com.selman.StockApplication</mainClass>
+                            <mainClass>com.stock.StockApplication</mainClass>
                         </manifest>
                     </archive>
                     <descriptorRefs>

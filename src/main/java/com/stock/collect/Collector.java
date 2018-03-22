@@ -1,10 +1,10 @@
-package com.selman.collect;
+package com.stock.collect;
 
 import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
-import com.selman.dao.DAO;
-import com.selman.entity.TimeSeries;
+import com.stock.dao.DAO;
+import com.stock.entity.TimeSeries;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
 import org.hibernate.query.Query;
@@ -79,9 +79,7 @@ public class Collector {
             log.warn("Empty response.");
             return null;
         }
-
-        JsonObject jsonObject = new JsonParser().parse(response).getAsJsonObject();
-        return jsonObject;
+        return new JsonParser().parse(response).getAsJsonObject();
     }
 
     private void persistTimeSeries(JsonObject timeSeriesData, Date lastProcessedDay) {

@@ -1,6 +1,6 @@
-package com.selman;
+package com.stock;
 
-import com.selman.collect.Collector;
+import com.stock.collect.Collector;
 
 public class StockApplication {
     public static void main(String[] args) {

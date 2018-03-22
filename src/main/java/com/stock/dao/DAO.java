@@ -1,6 +1,6 @@
-package com.selman.dao;
+package com.stock.dao;
 
-import com.selman.entity.TimeSeries;
+import com.stock.entity.TimeSeries;
 import org.hibernate.Session;
 import org.hibernate.SessionFactory;
 import org.hibernate.cfg.Configuration;

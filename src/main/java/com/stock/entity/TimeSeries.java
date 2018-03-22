@@ -1,4 +1,4 @@
-package com.selman.entity;
+package com.stock.entity;
 
 import javax.persistence.*;
 import java.util.Date;
