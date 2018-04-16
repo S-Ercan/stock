@@ -90,8 +90,9 @@ public class Collector {
     }
 
     private void persistTimeSeries(JsonObject timeSeriesData, Date lastProcessedDay) {
+        log.info(lastProcessedDay.toString());
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
-        String processedDate = df.format(lastProcessedDay);
+        df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         if (timeSeriesData == null) {
             log.warn("Empty JSON object for time series.");
@@ -108,21 +109,23 @@ public class Collector {
         Transaction transaction = session.getTransaction();
         transaction.begin();
 
-        String tradingDate;
+        String tradingDateString;
+        Date tradingDate = null;
         for (Map.Entry<String, JsonElement> entry : timeSeriesData.get("Time Series (Daily)").getAsJsonObject().entrySet()) {
-            tradingDate = entry.getKey();
-            if (tradingDate.equals(processedDate)) {
-                break;
+            tradingDateString = entry.getKey();
+            try {
+                tradingDate = df.parse(tradingDateString);
+                if (!(tradingDate.after(lastProcessedDay))) {
+                    continue;
+                }
+            } catch (ParseException e) {
+                e.printStackTrace();
             }
 
             JsonObject values = entry.getValue().getAsJsonObject();
 
             TimeSeries timeSeries = new TimeSeries();
-            try {
-                timeSeries.setTradingDay(df.parse(tradingDate));
-            } catch (ParseException e) {
-                e.printStackTrace();
-            }
+            timeSeries.setTradingDay(tradingDate);
             timeSeries.setOpeningPrice(values.get("1. open").getAsDouble());
             timeSeries.setHigh(values.get("2. high").getAsDouble());
             timeSeries.setLow(values.get("3. low").getAsDouble());
