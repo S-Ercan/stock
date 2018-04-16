@@ -24,12 +24,19 @@ import java.util.*;
 
 public class Collector {
     private final Logger log = LoggerFactory.getLogger(Collector.class);
+    private final String FUNCTION = "TIME_SERIES_DAILY";
+    private final String SYMBOL = "MSFT";
+    private final String OUTPUT_SIZE = "compact";
+    private final String API_KEY = "W6F61C7U07E7E8JX";
+    private String requestURLFormatString = "https://www.alphavantage.co/query?function=%s&symbol=%s&outputsize=%s&apikey=%s";
 
     public void collect() {
         Date firstDateToProcess = getLastProcessedDay();
-        String response = request(
-                "https://www.alphavantage.co/query?function=TIME_SERIES_DAILY&symbol=MSFT&outputsize=compact&apikey=W6F61C7U07E7E8JX");
+
+        String requestURL = String.format(requestURLFormatString, FUNCTION, SYMBOL, OUTPUT_SIZE, API_KEY);
+        String response = request(requestURL);
         JsonObject timeSeriesData = parseResponse(response);
+
         persistTimeSeries(timeSeriesData, firstDateToProcess);
         DAO.close();
     }
@@ -95,7 +102,7 @@ public class Collector {
         log.info("Created session.");
 
         for (Map.Entry<String, JsonElement> entry : timeSeriesData.get("Meta Data").getAsJsonObject().entrySet()) {
-            System.out.println(entry.getKey() + ": " + entry.getValue());
+            log.info(entry.getKey() + ": " + entry.getValue());
         }
 
         Transaction transaction = session.getTransaction();
