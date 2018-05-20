@@ -20,7 +20,7 @@ public class Controller {
     @RequestMapping("/test")
     @CrossOrigin("*")
     public ResponseEntity<List<TimeSeries>> test() {
-        Query<TimeSeries> query = DAO.getSession().createQuery("FROM TimeSeries ORDER BY trading_day DESC").setMaxResults(10);
+        Query<TimeSeries> query = DAO.getSession().createQuery("FROM TimeSeries ORDER BY trading_day DESC").setMaxResults(100);
         List<TimeSeries> result = query.list();
         return new ResponseEntity<>(result, HttpStatus.OK);
     }
