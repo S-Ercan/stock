@@ -29,10 +29,6 @@ public class Analyzer {
                 .option("password", "stock")
                 .load();
 
-        dataset.select(min("low")).show();
-        dataset.select(avg("low")).show();
-        dataset.select(max("low")).show();
-
         this.detectAnomalies(dataset);
     }
 
