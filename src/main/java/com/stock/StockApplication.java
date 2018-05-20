@@ -5,7 +5,7 @@ import com.stock.collect.Collector;
 
 public class StockApplication {
     public static void main(String[] args) {
-        new Collector().collect();
+//        new Collector().collect();
         new Analyzer().analyze();
     }
 }
