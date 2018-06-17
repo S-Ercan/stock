@@ -21,5 +21,6 @@ public class DAO {
 
     public static void close() {
         getSession().close();
+        session = null;
     }
 }
