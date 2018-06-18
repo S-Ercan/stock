@@ -11,7 +11,7 @@ import org.springframework.context.annotation.ComponentScan;
 public class StockApplication {
     public static void main(String[] args) {
         SpringApplication.run(StockApplication.class);
-//        new Collector().collect();
-//        new Analyzer().analyze();
+        new Collector().collect();
+        new Analyzer().trainLRModel();
     }
 }
