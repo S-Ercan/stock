@@ -35,6 +35,10 @@ public class TrendCalculator {
         ).setMaxResults(1);
         List result = query.list();
 
+        if (result.isEmpty()) {
+            throw new IllegalStateException("Insufficient data for trend calculation.");
+        }
+
         TimeSeries timeSeriesStart = (TimeSeries) result.get(0);
         log.info("Found entry on {} with closing price {}.", timeSeriesStart.getTradingDay().toString(), priceFormat.format(timeSeriesStart.getClosingPrice()));
 
@@ -44,6 +48,10 @@ public class TrendCalculator {
                 "ORDER BY trading_day DESC"
         ).setMaxResults(1);
         result = query.list();
+
+        if (result.isEmpty()) {
+            throw new IllegalStateException("Insufficient data for trend calculation.");
+        }
 
         TimeSeries timeSeriesEnd = (TimeSeries) result.get(0);
         log.info("Found entry on {} with closing price {}.", timeSeriesEnd.getTradingDay().toString(), priceFormat.format(timeSeriesEnd.getClosingPrice()));
