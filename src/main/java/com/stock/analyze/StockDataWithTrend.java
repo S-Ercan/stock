@@ -1,11 +1,18 @@
 package com.stock.analyze;
 
 import java.io.Serializable;
+import java.text.DecimalFormat;
 
 public class StockDataWithTrend implements Serializable {
+    private DecimalFormat priceFormat;
+
     private String symbol;
 
-    private int difference;
+    private double difference;
+
+    public StockDataWithTrend() {
+        this.priceFormat = new DecimalFormat("0.00");
+    }
 
     public String getSymbol() {
         return symbol;
@@ -15,11 +22,17 @@ public class StockDataWithTrend implements Serializable {
         this.symbol = symbol;
     }
 
-    public int getDifference() {
+    public double getDifference() {
         return difference;
     }
 
-    public void setDifference(int difference) {
+    public void setDifference(double difference) {
         this.difference = difference;
+    }
+
+    @Override
+    public String toString() {
+        return String.format("Difference for symbol %s: %s.",
+                this.getSymbol(), this.priceFormat.format(this.getDifference()));
     }
 }

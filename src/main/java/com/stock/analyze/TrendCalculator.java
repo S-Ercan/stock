@@ -79,6 +79,11 @@ public class TrendCalculator {
         TimeSeries timeSeriesEnd = (TimeSeries) result.get(0);
         log.info("Found entry on {} with closing price {}.", timeSeriesEnd.getTradingDay().toString(), this.priceFormat.format(timeSeriesEnd.getClosingPrice()));
 
-        log.info("Difference for symbol {}: {}", symbol, this.priceFormat.format(timeSeriesEnd.getClosingPrice() - timeSeriesStart.getClosingPrice()));
+        double difference = timeSeriesEnd.getClosingPrice() - timeSeriesStart.getClosingPrice();
+        StockDataWithTrend stockDataWithTrend = new StockDataWithTrend();
+        stockDataWithTrend.setSymbol(symbol);
+        stockDataWithTrend.setDifference(difference);
+
+        log.info(stockDataWithTrend.toString());
     }
 }
