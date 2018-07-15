@@ -7,11 +7,11 @@ import org.apache.spark.ml.PipelineStage;
 import org.apache.spark.ml.feature.VectorAssembler;
 import org.apache.spark.ml.regression.LinearRegression;
 import org.apache.spark.ml.regression.LinearRegressionModel;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Row;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.sql.*;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
+
+import java.util.Collections;
 
 import static org.apache.spark.sql.functions.avg;
 import static org.apache.spark.sql.functions.stddev;
@@ -53,6 +53,16 @@ public class Analyzer {
 
         log.info("Coefficients: {}", linearRegressionModel.coefficients().toString());
         log.info("Intercept: {}", linearRegressionModel.intercept());
+    }
+
+    public void createTrendModel() {
+        StockDataWithTrend data = new StockDataWithTrend();
+        Encoder<StockDataWithTrend> encoder = Encoders.bean(StockDataWithTrend.class);
+
+        SparkConf sparkConf = this.getSparkConf();
+        SparkSession spark = this.getSparkSession(sparkConf);
+        Dataset<StockDataWithTrend> dataset = spark.createDataset(Collections.singletonList(data), encoder);
+        dataset.show();
     }
 
     private SparkConf getSparkConf() {
