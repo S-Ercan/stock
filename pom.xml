@@ -108,7 +108,9 @@
                 <artifactId>flyway-maven-plugin</artifactId>
                 <version>4.2.0</version>
                 <configuration>
-                    <url>jdbc:mysql://localhost/stock</url>
+                    <url>jdbc:mysql://localhost/stock?useJDBCCompliantTimezoneShift=true
+                        &amp;useLegacyDatetimeCode=false&amp;serverTimezone=UTC
+                    </url>
                     <user>stock</user>
                     <password>stock</password>
                 </configuration>

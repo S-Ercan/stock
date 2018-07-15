@@ -1,0 +1,5 @@
+CREATE TABLE symbol (
+    id INT PRIMARY KEY AUTO_INCREMENT,
+    symbol VARCHAR(10),
+    collect BOOLEAN DEFAULT 0
+);
