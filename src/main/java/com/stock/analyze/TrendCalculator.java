@@ -3,6 +3,11 @@ package com.stock.analyze;
 import com.stock.dao.DAO;
 import com.stock.entity.Symbol;
 import com.stock.entity.TimeSeries;
+import org.apache.spark.SparkConf;
+import org.apache.spark.sql.Dataset;
+import org.apache.spark.sql.Encoder;
+import org.apache.spark.sql.Encoders;
+import org.apache.spark.sql.SparkSession;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -24,9 +29,11 @@ public class TrendCalculator {
 
     public void calculateTrends(Date startDate) {
         List<String> symbols = this.getSymbolsToAnalyze();
+        List<StockDataWithTrend> stockDataWithTrends = new ArrayList<>();
         for (String symbol : symbols) {
-            this.calculateTrendForSymbol(symbol, startDate);
+            stockDataWithTrends.add(this.calculateTrendForSymbol(symbol, startDate));
         }
+        this.cluster(stockDataWithTrends);
     }
 
     private List<String> getSymbolsToAnalyze() {
@@ -42,7 +49,7 @@ public class TrendCalculator {
         return symbols;
     }
 
-    public void calculateTrendForSymbol(String symbol, Date startDate) {
+    public StockDataWithTrend calculateTrendForSymbol(String symbol, Date startDate) {
         String startDateString = this.dateFormat.format(startDate);
 
         Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
@@ -85,5 +92,29 @@ public class TrendCalculator {
         stockDataWithTrend.setDifference(difference);
 
         log.info(stockDataWithTrend.toString());
+
+        return stockDataWithTrend;
+    }
+
+    private void cluster(List<StockDataWithTrend> stockDataWithTrends) {
+        Encoder<StockDataWithTrend> encoder = Encoders.bean(StockDataWithTrend.class);
+
+        SparkConf sparkConf = this.getSparkConf();
+        SparkSession spark = this.getSparkSession(sparkConf);
+        Dataset<StockDataWithTrend> dataset = spark.createDataset(stockDataWithTrends, encoder);
+
+        dataset.show();
+    }
+
+    private SparkConf getSparkConf() {
+        return new SparkConf().setAppName("stock").setMaster("local").set("spark.testing.memory", "2147480000");
+    }
+
+    private SparkSession getSparkSession(SparkConf sparkConf) {
+        return SparkSession
+                .builder()
+                .appName("Stock")
+                .config(sparkConf)
+                .getOrCreate();
     }
 }
