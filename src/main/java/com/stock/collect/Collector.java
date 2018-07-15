@@ -4,6 +4,7 @@ import com.google.gson.JsonElement;
 import com.google.gson.JsonObject;
 import com.google.gson.JsonParser;
 import com.stock.dao.DAO;
+import com.stock.entity.Symbol;
 import com.stock.entity.TimeSeries;
 import org.hibernate.Session;
 import org.hibernate.Transaction;
@@ -15,8 +16,6 @@ import java.io.BufferedReader;
 import java.io.IOException;
 import java.io.InputStreamReader;
 import java.net.HttpURLConnection;
-import java.net.MalformedURLException;
-import java.net.ProtocolException;
 import java.net.URL;
 import java.text.ParseException;
 import java.text.SimpleDateFormat;
@@ -25,24 +24,45 @@ import java.util.*;
 public class Collector {
     private final Logger log = LoggerFactory.getLogger(Collector.class);
     private final String FUNCTION = "TIME_SERIES_DAILY";
-    private final String SYMBOL = "MSFT";
     private final String OUTPUT_SIZE = "compact";
     private final String API_KEY = "W6F61C7U07E7E8JX";
     private String requestURLFormatString = "https://www.alphavantage.co/query?function=%s&symbol=%s&outputsize=%s&apikey=%s";
 
     public void collect() {
-        Date firstDateToProcess = getLastProcessedDay();
+        List<String> symbols = this.getSymbolsToCollect();
+        for (String symbol : symbols) {
+            this.collectForSymbol(symbol);
+        }
 
-        String requestURL = String.format(requestURLFormatString, FUNCTION, SYMBOL, OUTPUT_SIZE, API_KEY);
-        String response = request(requestURL);
-        JsonObject timeSeriesData = parseResponse(response);
-
-        persistTimeSeries(timeSeriesData, firstDateToProcess);
         DAO.close();
     }
 
-    private Date getLastProcessedDay() {
-        Query query = DAO.getSession().createQuery("FROM TimeSeries ORDER BY trading_day DESC");
+    public void collectForSymbol(String symbol) {
+        Date firstDateToProcess = getLastProcessedDay(symbol);
+
+        String requestURL = String.format(requestURLFormatString, FUNCTION, symbol, OUTPUT_SIZE, API_KEY);
+        String response = request(requestURL);
+        JsonObject timeSeriesData = parseResponse(response);
+
+        persistTimeSeries(timeSeriesData, firstDateToProcess, symbol);
+    }
+
+    private List<String> getSymbolsToCollect() {
+        List<String> symbols = new ArrayList<>();
+
+        Query query = DAO.getSession().createQuery("FROM Symbol WHERE collect=1");
+        List<Symbol> result = query.list();
+
+        for (Symbol symbol : result) {
+            symbols.add(symbol.getSymbol());
+        }
+
+        return symbols;
+    }
+
+    private Date getLastProcessedDay(String symbol) {
+        Query query = DAO.getSession().createQuery("FROM TimeSeries WHERE symbol = :symbol ORDER BY trading_day DESC");
+        query.setParameter("symbol", symbol);
         List result = query.list();
 
         if (result.size() == 0) {
@@ -71,10 +91,6 @@ public class Collector {
             in.close();
 
             response = input.toString();
-        } catch (ProtocolException e) {
-            e.printStackTrace();
-        } catch (MalformedURLException e) {
-            e.printStackTrace();
         } catch (IOException e) {
             e.printStackTrace();
         }
@@ -89,7 +105,7 @@ public class Collector {
         return new JsonParser().parse(response).getAsJsonObject();
     }
 
-    private void persistTimeSeries(JsonObject timeSeriesData, Date lastProcessedDay) {
+    private void persistTimeSeries(JsonObject timeSeriesData, Date lastProcessedDay, String symbol) {
         log.info(lastProcessedDay.toString());
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
@@ -125,6 +141,7 @@ public class Collector {
             JsonObject values = entry.getValue().getAsJsonObject();
 
             TimeSeries timeSeries = new TimeSeries();
+            timeSeries.setSymbol(symbol);
             timeSeries.setTradingDay(tradingDate);
             timeSeries.setOpeningPrice(values.get("1. open").getAsDouble());
             timeSeries.setHigh(values.get("2. high").getAsDouble());

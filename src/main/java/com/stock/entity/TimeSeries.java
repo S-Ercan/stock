@@ -9,16 +9,28 @@ public class TimeSeries {
     @Id
     @GeneratedValue(strategy = GenerationType.IDENTITY)
     private int id;
-
+    @Column(name = "symbol")
+    private String symbol;
     @Column(name = "trading_day")
     private Date tradingDay;
     @Column(name = "opening_price")
     private double openingPrice;
+    @Column(name = "high")
     private double high;
+    @Column(name = "low")
     private double low;
     @Column(name = "closing_price")
     private double closingPrice;
+    @Column(name = "volume")
     private long volume;
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
 
     public int getId() {
         return id;
