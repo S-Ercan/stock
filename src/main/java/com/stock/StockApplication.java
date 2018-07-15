@@ -39,7 +39,7 @@ public class StockApplication {
             case "trend":
                 Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
                 today.add(Calendar.DATE, -60);
-                new TrendCalculator().calculateTrend(today.getTime());
+                new TrendCalculator().calculateTrends(today.getTime());
                 break;
             default:
                 log.error("Illegal argument.");

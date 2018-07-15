@@ -1,11 +1,19 @@
 package com.stock.analyze;
 
-import com.stock.entity.TimeSeries;
-
 import java.io.Serializable;
 
-public class StockDataWithTrend extends TimeSeries implements Serializable {
+public class StockDataWithTrend implements Serializable {
+    private String symbol;
+
     private int difference;
+
+    public String getSymbol() {
+        return symbol;
+    }
+
+    public void setSymbol(String symbol) {
+        this.symbol = symbol;
+    }
 
     public int getDifference() {
         return difference;
