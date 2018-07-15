@@ -4,10 +4,13 @@ import com.stock.dao.DAO;
 import com.stock.entity.Symbol;
 import com.stock.entity.TimeSeries;
 import org.apache.spark.SparkConf;
-import org.apache.spark.sql.Dataset;
-import org.apache.spark.sql.Encoder;
-import org.apache.spark.sql.Encoders;
-import org.apache.spark.sql.SparkSession;
+import org.apache.spark.ml.Pipeline;
+import org.apache.spark.ml.PipelineModel;
+import org.apache.spark.ml.PipelineStage;
+import org.apache.spark.ml.clustering.KMeans;
+import org.apache.spark.ml.clustering.KMeansModel;
+import org.apache.spark.ml.feature.VectorAssembler;
+import org.apache.spark.sql.*;
 import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
@@ -104,6 +107,22 @@ public class TrendCalculator {
         Dataset<StockDataWithTrend> dataset = spark.createDataset(stockDataWithTrends, encoder);
 
         dataset.show();
+
+        String[] inputColumns = new String[]{"difference"};
+        VectorAssembler vectorAssembler = new VectorAssembler().setInputCols(inputColumns).setOutputCol("features");
+
+        KMeans kmeans = new KMeans().setK(3).setMaxIter(10).setSeed(1L);
+
+        Pipeline pipeline = new Pipeline();
+        pipeline.setStages(new PipelineStage[]{vectorAssembler, kmeans});
+        PipelineModel pipelineModel = pipeline.fit(dataset);
+        KMeansModel kMeansModel = (KMeansModel) pipelineModel.stages()[1];
+
+        log.info(Arrays.toString(kMeansModel.clusterCenters()));
+        kMeansModel.summary().cluster().show();
+
+        Dataset<Row> predictions = kMeansModel.transform(vectorAssembler.transform(dataset));
+        predictions.show();
     }
 
     private SparkConf getSparkConf() {
