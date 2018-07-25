@@ -20,31 +20,30 @@ public class StockApplication {
     public static void main(String[] args) {
         SpringApplication.run(StockApplication.class);
 
-        if (args.length == 0) {
-            log.error("Missing required argument.");
-            System.exit(1);
-        } else if (args.length > 1) {
+        if (args.length > 1) {
             log.error("Too many arguments.");
             System.exit(1);
         }
 
-        String mode = args[0];
-        switch (mode) {
-            case "collect":
-                new Collector().collect();
-                break;
-            case "analyze":
-                new Analyzer().createTrendModel();
-                break;
-            case "trend":
-                Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-                today.add(Calendar.DATE, -60);
-                new TrendCalculator().calculateTrends(today.getTime());
-                break;
-            default:
-                log.error("Illegal argument.");
-                System.exit(1);
-                break;
+        if (args.length == 1) {
+            String mode = args[0];
+            switch (mode) {
+                case "collect":
+                    new Collector().collect();
+                    break;
+                case "analyze":
+                    new Analyzer().createTrendModel();
+                    break;
+                case "trend":
+                    Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+                    today.add(Calendar.DATE, -60);
+                    new TrendCalculator().calculateTrends(today.getTime());
+                    break;
+                default:
+                    log.error("Illegal argument.");
+                    System.exit(1);
+                    break;
+            }
         }
     }
 }

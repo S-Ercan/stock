@@ -30,13 +30,13 @@ public class TrendCalculator {
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
 
-    public void calculateTrends(Date startDate) {
+    public List<HashMap<String, List<HashMap<String, Object>>>> calculateTrends(Date startDate) {
         List<String> symbols = this.getSymbolsToAnalyze();
         List<StockDataWithTrend> stockDataWithTrends = new ArrayList<>();
         for (String symbol : symbols) {
             stockDataWithTrends.add(this.calculateTrendForSymbol(symbol, startDate));
         }
-        this.cluster(stockDataWithTrends);
+        return this.cluster(stockDataWithTrends);
     }
 
     private List<String> getSymbolsToAnalyze() {
@@ -99,7 +99,7 @@ public class TrendCalculator {
         return stockDataWithTrend;
     }
 
-    private void cluster(List<StockDataWithTrend> stockDataWithTrends) {
+    private List<HashMap<String, List<HashMap<String, Object>>>> cluster(List<StockDataWithTrend> stockDataWithTrends) {
         Encoder<StockDataWithTrend> encoder = Encoders.bean(StockDataWithTrend.class);
 
         SparkConf sparkConf = this.getSparkConf();
@@ -111,7 +111,7 @@ public class TrendCalculator {
         String[] inputColumns = new String[]{"difference"};
         VectorAssembler vectorAssembler = new VectorAssembler().setInputCols(inputColumns).setOutputCol("features");
 
-        KMeans kmeans = new KMeans().setK(3).setMaxIter(10).setSeed(1L);
+        KMeans kmeans = new KMeans().setK(5).setMaxIter(10).setSeed(1L);
 
         Pipeline pipeline = new Pipeline();
         pipeline.setStages(new PipelineStage[]{vectorAssembler, kmeans});
@@ -123,6 +123,31 @@ public class TrendCalculator {
 
         Dataset<Row> predictions = kMeansModel.transform(vectorAssembler.transform(dataset));
         predictions.show();
+
+        return this.formatOutput(predictions, 5);
+    }
+
+    private List<HashMap<String, List<HashMap<String, Object>>>> formatOutput(Dataset<Row> predictions, int k) {
+        List<HashMap<String, List<HashMap<String, Object>>>> output = new ArrayList<>();
+        for (int i = 0; i < k; i++) {
+            HashMap<String, List<HashMap<String, Object>>> data = new HashMap<>();
+            data.put("data", new ArrayList<>());
+            output.add(data);
+        }
+
+        for (Row prediction : predictions.collectAsList()) {
+            String symbol = prediction.get(prediction.fieldIndex("symbol")).toString();
+            double difference = (double) prediction.get(prediction.fieldIndex("difference"));
+            int predictedCluster = (int) prediction.get(prediction.fieldIndex("prediction"));
+
+            HashMap<String, Object> point = new HashMap<>();
+            point.put("x", predictedCluster * 5 + 10);
+            point.put("y", difference);
+            point.put("z", 1);
+            point.put("name", symbol);
+            output.get(predictedCluster).get("data").add(point);
+        }
+        return output;
     }
 
     private SparkConf getSparkConf() {
