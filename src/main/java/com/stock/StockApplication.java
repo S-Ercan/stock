@@ -30,6 +30,7 @@ public class StockApplication {
             switch (mode) {
                 case "collect":
                     new Collector().collect();
+                    System.exit(0);
                     break;
                 case "analyze":
                     new Analyzer().createTrendModel();

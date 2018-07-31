@@ -12,6 +12,7 @@
         <property name="hibernate.connection.username">stock</property>
         <property name="hibernate.connection.password">stock</property>
         <property name="hibernate.dialect">org.hibernate.dialect.MySQLDialect</property>
+        <property name="connection.pool_size">10</property>
 
         <mapping class="com.stock.entity.TimeSeries"/>
         <mapping class="com.stock.entity.Symbol"/>
