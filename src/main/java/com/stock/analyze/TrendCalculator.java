@@ -34,7 +34,11 @@ public class TrendCalculator {
         List<String> symbols = this.getSymbolsToAnalyze();
         List<StockDataWithTrend> stockDataWithTrends = new ArrayList<>();
         for (String symbol : symbols) {
-            stockDataWithTrends.add(this.calculateTrendForSymbol(symbol, startDate));
+            try {
+                stockDataWithTrends.add(this.calculateTrendForSymbol(symbol, startDate));
+            } catch (IllegalStateException e) {
+                log.warn("Could not calculate trend for symbol {}, skipping.", symbol);
+            }
         }
         return this.cluster(stockDataWithTrends);
     }
