@@ -111,14 +111,19 @@ public class Collector {
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
         if (timeSeriesData == null) {
-            log.warn("Empty JSON object for time series.");
+            log.warn("Empty JSON object for {}.", symbol);
+            return;
+        }
+        JsonElement metadataElement = timeSeriesData.get("Meta Data");
+        if (metadataElement == null) {
+            log.warn("No 'Meta Data' element found in response for {}.", symbol);
             return;
         }
 
         Session session = DAO.getSession();
         log.info("Created session.");
 
-        for (Map.Entry<String, JsonElement> entry : timeSeriesData.get("Meta Data").getAsJsonObject().entrySet()) {
+        for (Map.Entry<String, JsonElement> entry : metadataElement.getAsJsonObject().entrySet()) {
             log.info(entry.getKey() + ": " + entry.getValue());
         }
 
