@@ -26,12 +26,24 @@ public class Collector {
     private final String FUNCTION = "TIME_SERIES_DAILY";
     private final String OUTPUT_SIZE = "compact";
     private final String API_KEY = "W6F61C7U07E7E8JX";
-    private String requestURLFormatString = "https://www.alphavantage.co/query?function=%s&symbol=%s&outputsize=%s&apikey=%s";
+    private final int maxRequestsPerMinute = 4;
+    private final long requestDelay = 60000;
+    private final String requestURLFormatString = "https://www.alphavantage.co/query?function=%s&symbol=%s&outputsize=%s&apikey=%s";
 
     public void collect() {
         List<String> symbols = this.getSymbolsToCollect();
+
+        int numRequests = 0;
         for (String symbol : symbols) {
+            if (numRequests > 0 && numRequests % this.maxRequestsPerMinute == 0) {
+                try {
+                    Thread.sleep(this.requestDelay);
+                } catch (InterruptedException e) {
+                    log.warn("Thread.sleep() was interrupted.");
+                }
+            }
             this.collectForSymbol(symbol);
+            numRequests++;
         }
 
         DAO.close();
