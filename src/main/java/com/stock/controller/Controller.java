@@ -9,9 +9,7 @@ import org.slf4j.LoggerFactory;
 import org.springframework.http.HttpStatus;
 import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
-import org.springframework.web.bind.annotation.CrossOrigin;
-import org.springframework.web.bind.annotation.RequestMapping;
-import org.springframework.web.bind.annotation.RestController;
+import org.springframework.web.bind.annotation.*;
 
 import java.util.Calendar;
 import java.util.HashMap;
@@ -35,6 +33,15 @@ public class Controller {
     public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trend() {
         Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
         today.add(Calendar.DATE, -60);
+        List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateTrends(today.getTime());
+        return new ResponseEntity<>(output, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/trend", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin("*")
+    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgo(@RequestParam("daysAgo") int daysAgo) {
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        today.add(Calendar.DATE, -daysAgo);
         List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateTrends(today.getTime());
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
