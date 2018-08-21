@@ -37,7 +37,7 @@ public class Controller {
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
-    @RequestMapping(value = "/trend", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @RequestMapping(value = "/trendFromDaysAgo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin("*")
     public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgo(@RequestParam("daysAgo") int daysAgo) {
         Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
