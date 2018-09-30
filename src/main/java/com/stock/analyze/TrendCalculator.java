@@ -50,11 +50,12 @@ public class TrendCalculator {
 
     public List<HashMap<String, List<HashMap<String, Object>>>> calculateFromStartDateAndWithNumberOfClusters(int daysAgo, int numberOfClusters) {
         Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        today.add(Calendar.DATE, -daysAgo);
+        today.add(Calendar.DATE, daysAgo);
         return this.calculateTrends(today.getTime(), numberOfClusters);
     }
 
     public List<HashMap<String, List<HashMap<String, Object>>>> calculateTrends(Date startDate, int numberOfClusters) {
+        log.info("Calculating {} clusters starting from {}.", numberOfClusters, startDate);
         List<String> symbols = this.getSymbolsToAnalyze();
         List<StockDataWithTrend> stockDataWithTrends = new ArrayList<>();
         for (String symbol : symbols) {
