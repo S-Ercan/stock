@@ -15,6 +15,7 @@ import org.hibernate.query.Query;
 import org.slf4j.Logger;
 import org.slf4j.LoggerFactory;
 
+import java.util.concurrent.ThreadLocalRandom;
 import java.text.DecimalFormat;
 import java.text.SimpleDateFormat;
 import java.util.*;
@@ -164,13 +165,15 @@ public class TrendCalculator {
             output.add(data);
         }
 
+        int margin;
         for (Row prediction : predictions.collectAsList()) {
             String symbol = prediction.get(prediction.fieldIndex("symbol")).toString();
             double difference = (double) prediction.get(prediction.fieldIndex("difference"));
             int predictedCluster = (int) prediction.get(prediction.fieldIndex("prediction"));
 
             HashMap<String, Object> point = new HashMap<>();
-            point.put("x", predictedCluster * 5 + 10);
+            margin = ThreadLocalRandom.current().nextInt(-2, 3);
+            point.put("x", predictedCluster * 5 + 10 + margin);
             point.put("y", difference);
             point.put("z", 1);
             point.put("name", symbol);
