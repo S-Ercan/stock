@@ -139,7 +139,7 @@ public class TrendCalculator {
         String[] inputColumns = new String[]{"difference"};
         VectorAssembler vectorAssembler = new VectorAssembler().setInputCols(inputColumns).setOutputCol("features");
 
-        KMeans kmeans = new KMeans().setK(5).setMaxIter(10).setSeed(1L);
+        KMeans kmeans = new KMeans().setK(numberOfClusters).setMaxIter(10).setSeed(1L);
 
         Pipeline pipeline = new Pipeline();
         pipeline.setStages(new PipelineStage[]{vectorAssembler, kmeans});
@@ -152,7 +152,7 @@ public class TrendCalculator {
         Dataset<Row> predictions = kMeansModel.transform(vectorAssembler.transform(dataset));
         predictions.show();
 
-        return this.formatOutput(predictions, 5);
+        return this.formatOutput(predictions, numberOfClusters);
     }
 
     private List<HashMap<String, List<HashMap<String, Object>>>> formatOutput(Dataset<Row> predictions, int k) {

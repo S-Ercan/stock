@@ -35,21 +35,24 @@ public class Controller {
 
     @RequestMapping(value = "/trendFromDaysAgo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin("*")
-    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgo(@RequestParam("daysAgo") int daysAgo) {
+    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgo(
+            @RequestParam("daysAgo") int daysAgo) {
         List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateFromStartDate(daysAgo);
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/trendWithNumberOfClusters", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin("*")
-    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendWithNumberOfClusters(@RequestParam("numberOfClusters") int numberOfClusters) {
+    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendWithNumberOfClusters(
+            @RequestParam("numberOfClusters") int numberOfClusters) {
         List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateWithNumberOfClusters(numberOfClusters);
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/trendFromDaysAgoAndWithNumberOfClusters", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin("*")
-    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgoAndWithNumberOfClusters(@RequestParam("daysAgo") int daysAgo, @RequestParam("numberOfClusters") int numberOfClusters) {
+    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgoAndWithNumberOfClusters(
+            @RequestParam("daysAgo") int daysAgo, @RequestParam("numberOfClusters") int numberOfClusters) {
         List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateFromStartDateAndWithNumberOfClusters(daysAgo, numberOfClusters);
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
