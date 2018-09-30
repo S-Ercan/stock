@@ -30,7 +30,31 @@ public class TrendCalculator {
         this.dateFormat = new SimpleDateFormat("yyyy-MM-dd");
     }
 
-    public List<HashMap<String, List<HashMap<String, Object>>>> calculateTrends(Date startDate) {
+    public List<HashMap<String, List<HashMap<String, Object>>>> calculate() {
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        today.add(Calendar.DATE, -60);
+        return this.calculateTrends(today.getTime(), 5);
+    }
+
+    public List<HashMap<String, List<HashMap<String, Object>>>> calculateFromStartDate(int daysAgo) {
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        today.add(Calendar.DATE, -daysAgo);
+        return this.calculateTrends(today.getTime(), 5);
+    }
+
+    public List<HashMap<String, List<HashMap<String, Object>>>> calculateWithNumberOfClusters(int numberOfClusters) {
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        today.add(Calendar.DATE, -60);
+        return this.calculateTrends(today.getTime(), numberOfClusters);
+    }
+
+    public List<HashMap<String, List<HashMap<String, Object>>>> calculateFromStartDateAndWithNumberOfClusters(int daysAgo, int numberOfClusters) {
+        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
+        today.add(Calendar.DATE, -daysAgo);
+        return this.calculateTrends(today.getTime(), numberOfClusters);
+    }
+
+    public List<HashMap<String, List<HashMap<String, Object>>>> calculateTrends(Date startDate, int numberOfClusters) {
         List<String> symbols = this.getSymbolsToAnalyze();
         List<StockDataWithTrend> stockDataWithTrends = new ArrayList<>();
         for (String symbol : symbols) {
@@ -40,7 +64,7 @@ public class TrendCalculator {
                 log.warn("Could not calculate trend for symbol {}, skipping.", symbol);
             }
         }
-        return this.cluster(stockDataWithTrends);
+        return this.cluster(stockDataWithTrends, numberOfClusters);
     }
 
     private List<String> getSymbolsToAnalyze() {
@@ -103,7 +127,7 @@ public class TrendCalculator {
         return stockDataWithTrend;
     }
 
-    private List<HashMap<String, List<HashMap<String, Object>>>> cluster(List<StockDataWithTrend> stockDataWithTrends) {
+    private List<HashMap<String, List<HashMap<String, Object>>>> cluster(List<StockDataWithTrend> stockDataWithTrends, int numberOfClusters) {
         Encoder<StockDataWithTrend> encoder = Encoders.bean(StockDataWithTrend.class);
 
         SparkConf sparkConf = this.getSparkConf();

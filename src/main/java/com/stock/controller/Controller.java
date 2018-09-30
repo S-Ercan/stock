@@ -11,10 +11,8 @@ import org.springframework.http.MediaType;
 import org.springframework.http.ResponseEntity;
 import org.springframework.web.bind.annotation.*;
 
-import java.util.Calendar;
 import java.util.HashMap;
 import java.util.List;
-import java.util.TimeZone;
 
 @RestController
 public class Controller {
@@ -31,18 +29,28 @@ public class Controller {
     @RequestMapping(value = "/trend", produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin("*")
     public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trend() {
-        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        today.add(Calendar.DATE, -60);
-        List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateTrends(today.getTime());
+        List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculate();
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 
     @RequestMapping(value = "/trendFromDaysAgo", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
     @CrossOrigin("*")
     public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgo(@RequestParam("daysAgo") int daysAgo) {
-        Calendar today = Calendar.getInstance(TimeZone.getTimeZone("UTC"));
-        today.add(Calendar.DATE, -daysAgo);
-        List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateTrends(today.getTime());
+        List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateFromStartDate(daysAgo);
+        return new ResponseEntity<>(output, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/trendWithNumberOfClusters", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin("*")
+    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendWithNumberOfClusters(@RequestParam("numberOfClusters") int numberOfClusters) {
+        List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateWithNumberOfClusters(numberOfClusters);
+        return new ResponseEntity<>(output, HttpStatus.OK);
+    }
+
+    @RequestMapping(value = "/trendFromDaysAgoAndWithNumberOfClusters", method = RequestMethod.GET, produces = MediaType.APPLICATION_JSON_VALUE)
+    @CrossOrigin("*")
+    public ResponseEntity<List<HashMap<String, List<HashMap<String, Object>>>>> trendFromDaysAgoAndWithNumberOfClusters(@RequestParam("daysAgo") int daysAgo, @RequestParam("numberOfClusters") int numberOfClusters) {
+        List<HashMap<String, List<HashMap<String, Object>>>> output = new TrendCalculator().calculateFromStartDateAndWithNumberOfClusters(daysAgo, numberOfClusters);
         return new ResponseEntity<>(output, HttpStatus.OK);
     }
 }
