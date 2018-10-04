@@ -50,6 +50,7 @@ public class Collector {
     }
 
     public void collectForSymbol(String symbol) {
+        log.info("Collecting data for symbol {}.", symbol);
         Date firstDateToProcess = getLastProcessedDay(symbol);
 
         String requestURL = String.format(requestURLFormatString, FUNCTION, symbol, OUTPUT_SIZE, API_KEY);
@@ -118,7 +119,7 @@ public class Collector {
     }
 
     private void persistTimeSeries(JsonObject timeSeriesData, Date lastProcessedDay, String symbol) {
-        log.info(lastProcessedDay.toString());
+        log.info("Persisting data for symbol {}.", symbol);
         SimpleDateFormat df = new SimpleDateFormat("yyyy-MM-dd");
         df.setTimeZone(TimeZone.getTimeZone("UTC"));
 
