@@ -154,6 +154,8 @@ public class TrendCalculator {
         Dataset<Row> predictions = kMeansModel.transform(vectorAssembler.transform(dataset));
         predictions.show();
 
+        DAO.close();
+
         return this.formatOutput(predictions, numberOfClusters);
     }
 
