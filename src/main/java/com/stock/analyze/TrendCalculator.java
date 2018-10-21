@@ -167,15 +167,15 @@ public class TrendCalculator {
             output.add(data);
         }
 
-        int margin;
+        int randomMargin;
         for (Row prediction : predictions.collectAsList()) {
             String symbol = prediction.get(prediction.fieldIndex("symbol")).toString();
             double difference = (double) prediction.get(prediction.fieldIndex("difference"));
             int predictedCluster = (int) prediction.get(prediction.fieldIndex("prediction"));
 
             HashMap<String, Object> point = new HashMap<>();
-            margin = ThreadLocalRandom.current().nextInt(-2, 3);
-            point.put("x", predictedCluster * 5 + 10 + margin);
+            randomMargin = ThreadLocalRandom.current().nextInt(-2, 3);
+            point.put("x", predictedCluster * 5 + 20 + randomMargin);
             point.put("y", difference);
             point.put("z", 1);
             point.put("name", symbol);
