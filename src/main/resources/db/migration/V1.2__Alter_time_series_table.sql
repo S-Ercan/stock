@@ -1,0 +1,1 @@
+ALTER TABLE `time_series` ADD `symbol` VARCHAR(20) AFTER `id`;
